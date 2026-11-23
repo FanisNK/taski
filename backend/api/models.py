@@ -3,7 +3,7 @@ from django.db import models
 
 class Task(models.Model):
     title = models.CharField(verbose_name='Заголовок', max_length=120)
-    description = models.TextField()
+    description = models.TextField(blank=True, default="")
     completed = models.BooleanField(default=False)
 
     def __str__(self):

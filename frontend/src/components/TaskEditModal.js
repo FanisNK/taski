@@ -20,16 +20,24 @@ const TaskEditModal = ({ taskData, toggle, onSave }) => {
 
   const handleChange = (e) => {
     let { name, value } = e.target;
+
     if (e.target.type === "checkbox") {
       value = e.target.checked;
     }
+
     setItem({ ...item, [name]: value });
   };
 
   return (
     <Modal isOpen={true} toggle={toggle}>
-      <Form onSubmit={(e) => { onSave(item); e.preventDefault(); }}>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSave(item);
+        }}
+      >
         <ModalHeader toggle={toggle}>Task Item</ModalHeader>
+
         <ModalBody>
           <FormGroup>
             <Label for="task-title">Title</Label>
@@ -43,6 +51,7 @@ const TaskEditModal = ({ taskData, toggle, onSave }) => {
               required
             />
           </FormGroup>
+
           <FormGroup>
             <Label for="task-description">Description</Label>
             <Input
@@ -52,9 +61,9 @@ const TaskEditModal = ({ taskData, toggle, onSave }) => {
               value={item.description}
               onChange={handleChange}
               placeholder="Enter Task description"
-              required
             />
           </FormGroup>
+
           <FormGroup check>
             <Label check>
               <Input
@@ -67,6 +76,7 @@ const TaskEditModal = ({ taskData, toggle, onSave }) => {
             </Label>
           </FormGroup>
         </ModalBody>
+
         <ModalFooter>
           <Button type="submit" color="success">
             Save

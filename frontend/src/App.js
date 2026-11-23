@@ -19,12 +19,19 @@ const App = () => {
   const [isShowCompleted, setIsShowCompleted] = useState(false);
   const [taskList, setTaskList] = useState([]);
   const [activeTask, setActiveTask] = useState(null);
+  const [error, setError] = useState("");
 
   const refreshList = () => {
     axios
       .get("/api/tasks/")
-      .then((res) => setTaskList(res.data))
-      .catch(console.error);
+      .then((res) => {
+        setTaskList(res.data);
+        setError("");
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Не удалось загрузить список задач.");
+      });
   };
 
   useEffect(() => {
@@ -37,22 +44,36 @@ const App = () => {
       : axios.post("/api/tasks/", item);
 
     request
-      .then((res) => {
+      .then(() => {
         refreshList();
         setActiveTask(null);
+        setError("");
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error(err);
+        setError("Не удалось сохранить задачу.");
+      });
   };
 
   const handleDelete = (item) => {
     axios
       .delete(`/api/tasks/${item.id}/`)
-      .then(refreshList)
-      .catch(console.error);
+      .then(() => {
+        refreshList();
+        setError("");
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Не удалось удалить задачу.");
+      });
   };
 
   const createTask = () => {
-    setActiveTask({ title: "", description: "", completed: false });
+    setActiveTask({
+      title: "",
+      description: "",
+      completed: false,
+    });
   };
 
   const showedTasks = taskList.filter(
@@ -62,6 +83,13 @@ const App = () => {
   return (
     <main className="container">
       <h1 className="text text-uppercase text-center my-4">Taski</h1>
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
+
       <div className="row">
         <div className="col-md-6 col-sm-10 mx-auto p-0">
           <div className="card p-3">
@@ -70,10 +98,12 @@ const App = () => {
                 Add task
               </button>
             </div>
+
             <TabList
               displayCompleted={setIsShowCompleted}
               isShowCompleted={isShowCompleted}
             />
+
             <ul className="list-group list-group-flush border-top-0">
               {showedTasks.map((task) => (
                 <Task
@@ -87,6 +117,7 @@ const App = () => {
           </div>
         </div>
       </div>
+
       {activeTask && (
         <TaskEditModal
           taskData={activeTask}
